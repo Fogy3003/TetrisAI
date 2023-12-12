@@ -30,7 +30,7 @@ class Game:
         self.GAME_UPDATE = pygame.USEREVENT
         pygame.time.set_timer(self.GAME_UPDATE, 200)
 
-    def play_step(self):
+    def play_step(self, move=False):
         for event in pygame.event.get():
             reward = self.get_score()
             if event.type == pygame.QUIT:
@@ -49,6 +49,10 @@ class Game:
                     self.update_score(0, 1)
                 if event.key == pygame.K_UP and self.game_over == False:
                     self.rotate()
+
+            if move:
+                move()
+
             if event.type == self.GAME_UPDATE and self.game_over == False:
                 self.move_down()
         return self.game_over
