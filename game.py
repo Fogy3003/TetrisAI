@@ -2,7 +2,8 @@ from grid import Grid
 from blocks import *
 import random
 import pygame
-
+from colors import Colors
+import sys
 class Game:
     def __init__(self):
         self.grid = Grid()
@@ -11,6 +12,46 @@ class Game:
         self.next_block = self.get_random_block()
         self.game_over = False
         self.score = 0
+        pygame.init()
+
+        self.title_font = pygame.font.Font(None, 40)
+        self.score_surface = self.title_font.render("Score", True, Colors.white)
+        self.next_surface = self.title_font.render("Next", True, Colors.white)
+        self.game_over_surface = self.title_font.render("GAME OVER", True, Colors.white)
+
+        self.score_rect = pygame.Rect(320, 55, 170, 60)
+        self.next_rect = pygame.Rect(320, 215, 170, 180)
+
+        self.screen = pygame.display.set_mode((500, 620))
+        pygame.display.set_caption("Python Tetris")
+
+        self.clock = pygame.time.Clock()
+
+        self.GAME_UPDATE = pygame.USEREVENT
+        pygame.time.set_timer(self.GAME_UPDATE, 200)
+
+    def play_step(self):
+        for event in pygame.event.get():
+            reward = self.get_score()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if self.game_over == True:
+                    self.game_over = False
+                    self.reset()
+                if event.key == pygame.K_LEFT and self.game_over == False:
+                    self.move_left()
+                if event.key == pygame.K_RIGHT and self.game_over == False:
+                    self.move_right()
+                if event.key == pygame.K_DOWN and self.game_over == False:
+                    self.move_down()
+                    self.update_score(0, 1)
+                if event.key == pygame.K_UP and self.game_over == False:
+                    self.rotate()
+            if event.type == self.GAME_UPDATE and self.game_over == False:
+                self.move_down()
+        return self.game_over
 
     def update_score(self, lines_cleared, move_down_points):
         if lines_cleared == 1:
@@ -20,6 +61,9 @@ class Game:
         elif lines_cleared == 3:
             self.score += 500
         self.score += move_down_points
+
+    def get_score(self):
+        return self.score
 
     def get_random_block(self):
         if len(self.blocks) == 0:
@@ -94,3 +138,21 @@ class Game:
             self.next_block.draw(screen, 255, 280)
         else:
             self.next_block.draw(screen, 270, 270)
+
+    def update_ui(self):
+        score_value_surface = self.title_font.render(str(self.score), True, Colors.white)
+
+        self.screen.fill(Colors.dark_blue)
+        self.screen.blit(self.score_surface, (365, 20, 50, 50))
+        self.screen.blit(self.next_surface, (375, 180, 50, 50))
+
+        if self.game_over == True:
+            self.screen.blit(self.game_over_surface, (320, 450, 50, 50))
+        pygame.draw.rect(self.screen, Colors.light_blue, self.score_rect, 0, 10)
+        self.screen.blit(score_value_surface, score_value_surface.get_rect(centerx=self.score_rect.centerx,
+                                                                      centery=self.score_rect.centery))
+        pygame.draw.rect(self.screen, Colors.light_blue, self.next_rect, 0, 10)
+        self.draw(self.screen)
+
+        pygame.display.update()
+        self.clock.tick(60)
