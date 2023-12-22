@@ -50,8 +50,15 @@ class Game:
                 if event.key == pygame.K_UP and self.game_over == False:
                     self.rotate()
 
-            if move:
-                move()
+            if move == [1,0,0]:
+                self.move_left()
+            elif move == [0,1,0]:
+                self.move_right()
+            elif move == [0,0,1]:
+                self.move_down()
+                self.update_score(0, 1)
+            else:
+                pass
 
             if event.type == self.GAME_UPDATE and self.game_over == False:
                 self.move_down()
@@ -159,4 +166,4 @@ class Game:
         self.draw(self.screen)
 
         pygame.display.update()
-        self.clock.tick(60)
+        self.clock.tick(20)
