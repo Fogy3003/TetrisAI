@@ -6,7 +6,10 @@ import os
 
 
 class Linear_QNet(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, output_size, load):
+        if load:
+            pass # TODO model load
+        print('Model created')
         super().__init__()
         self.linear1 = nn.Linear(input_size, hidden_size)
         self.linear2 = nn.Linear(hidden_size, output_size)
@@ -17,6 +20,7 @@ class Linear_QNet(nn.Module):
         return x
 
     def save(self, file_name='model.pth'):
+        print('Model saved')
         model_folder_path = './model'
         if not os.path.exists(model_folder_path):
             os.makedirs(model_folder_path)
@@ -52,8 +56,8 @@ class QTrainer:
             if not done[idx]:
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
 
-            print(target)
-            target[0][idx][torch.argmax(action).item()] = Q_new # TODO figure out indexing
+
+            target[idx][0][torch.argmax(action).item()] = Q_new
 
         self.optimizer.zero_grad()
         loss = self.criterion(target, pred)

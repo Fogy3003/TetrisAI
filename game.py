@@ -50,13 +50,15 @@ class Game:
                 if event.key == pygame.K_UP and self.game_over == False:
                     self.rotate()
 
-            if move == [1,0,0]:
+            if move == [1,0,0,0]:
                 self.move_left()
-            elif move == [0,1,0]:
+            elif move == [0,1,0,0]:
                 self.move_right()
-            elif move == [0,0,1]:
+            elif move == [0,0,1,0]:
                 self.move_down()
                 self.update_score(0, 1)
+            elif move == [0,0,0,1]:
+                self.rotate()
             else:
                 pass
 
@@ -117,6 +119,7 @@ class Game:
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.score = 0
+        self.game_over = False
 
     def block_fits(self):
         tiles = self.current_block.get_cell_positions()

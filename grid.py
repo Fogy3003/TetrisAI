@@ -1,5 +1,6 @@
 import pygame
 from colors import Colors
+import random
 
 class Grid:
     def __init__(self):
